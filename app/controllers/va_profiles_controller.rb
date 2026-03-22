@@ -131,9 +131,9 @@ class VaProfilesController < ApplicationController
   #   and ensure the form dropdown in app/views/va_profiles/_form.html.erb
   #   includes the matching string value.)
 
-# Loads tool data from config/va_tools.yml and returns
-# the matching stack for the given niche, filtered by budget.
-# Loads tool data from config/va_tools.yml and returns
+  # Loads tool data from config/va_tools.yml and returns
+  # the matching stack for the given niche, filtered by budget.
+  # Loads tool data from config/va_tools.yml and returns
   # the matching stack for the given niche, filtered by budget.
   # Falls back to the "default" key if niche is not found.
   def recommend_tools(niche, budget)
@@ -157,7 +157,7 @@ class VaProfilesController < ApplicationController
       # Mid tier — free tools plus first paid tool as a suggestion
       free_tools = tools.select { |t| t[:free] == true }
       first_paid = tools.find { |t| t[:free] == false }
-      first_paid ? free_tools + [first_paid.merge(desc: "#{first_paid[:desc]} ⭐ Recommended upgrade")] : free_tools
+      first_paid ? free_tools + [ first_paid.merge(desc: "#{first_paid[:desc]} ⭐ Recommended upgrade") ] : free_tools
     else
       # Zero budget — free tools only
       tools.select { |t| t[:free] == true }
