@@ -12,18 +12,18 @@
 
   <div style="margin-bottom: 1.5rem;">
     <%= form.label :niche, "Your VA Niche", style: "display:block; font-weight:bold; margin-bottom:0.5rem;" %>
-    <%= form.select :niche,
-      [
-        ["── Tier 1: Generalist ──", ""],
+<%= form.select :niche,
+      options_for_select([
+        ["── Tier 1: Generalist ──", "", { disabled: true }],
         ["General VA — Administrative & Executive Support", "General VA"],
         ["Travel & Itinerary VA — Trip Planning & Bookings", "Travel & Itinerary VA"],
-        ["── Tier 2: Specialist ──", ""],
+        ["── Tier 2: Specialist ──", "", { disabled: true }],
         ["Creative VA — Content, Design & Brand Support", "Creative VA"],
         ["Social Media VA — Digital Presence & Community Mgmt", "Social Media VA"],
         ["Lead Gen VA — Sales Pipeline & Biz Dev", "Lead Gen VA"],
         ["Real Estate VA — Property Operations & Transactions", "Real Estate VA"],
         ["Tech VA — AI, Automation & Systems Specialist", "Tech VA"]
-      ],
+      ]),
       { prompt: "Select your niche..." },
       { style: "width:100%; padding:0.5rem; font-size:1rem;" }
     %>

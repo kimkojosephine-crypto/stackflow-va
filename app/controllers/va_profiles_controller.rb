@@ -133,21 +133,35 @@ class VaProfilesController < ApplicationController
 
 # Loads tool data from config/va_tools.yml and returns
 # the matching stack for the given niche, filtered by budget.
-# Falls back to the "default" key if niche is not found.
-def recommend_tools(niche, budget)
-  # Load and cache the YAML file — avoids re-reading disk on every request
-  all_tools = Rails.cache.fetch("va_tools") do
-    tools_file = Rails.root.join("config", "va_tools.yml")
-    YAML.load_file(tools_file).transform_values do |tools|
-      tools.map(&:symbolize_keys)
+# Loads tool data from config/va_tools.yml and returns
+  # the matching stack for the given niche, filtered by budget.
+  # Falls back to the "default" key if niche is not found.
+  def recommend_tools(niche, budget)
+    # Load and cache the YAML file — avoids re-reading disk on every request
+    all_tools = Rails.cache.fetch("va_tools") do
+      tools_file = Rails.root.join("config", "va_tools.yml")
+      YAML.load_file(tools_file).transform_values do |tools|
+        tools.map(&:symbolize_keys)
+      end
+    end
+
+    # Fetch tools for the niche, fall back to default if not found
+    tools = all_tools[niche] || all_tools["default"]
+
+    # Three budget tiers
+    case budget.to_i
+    when 50..Float::INFINITY
+      # Full stack — all tools including paid
+      tools
+    when 1..49
+      # Mid tier — free tools plus first paid tool as a suggestion
+      free_tools = tools.select { |t| t[:free] == true }
+      first_paid = tools.find { |t| t[:free] == false }
+      first_paid ? free_tools + [first_paid.merge(desc: "#{first_paid[:desc]} ⭐ Recommended upgrade")] : free_tools
+    else
+      # Zero budget — free tools only
+      tools.select { |t| t[:free] == true }
     end
   end
-
-  # Fetch tools for the niche, fall back to default if not found
-  tools = all_tools[niche] || all_tools["default"]
-
-  # Return full stack if budget >= $50, otherwise free tools only
-  budget.to_i >= 50 ? tools : tools.select { |t| t[:free] == true }
-end
-helper_method :recommend_tools
+  helper_method :recommend_tools
 end
