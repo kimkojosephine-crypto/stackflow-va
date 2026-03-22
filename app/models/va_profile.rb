@@ -1,0 +1,2 @@
+class VaProfile < ApplicationRecord
+end

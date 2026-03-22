@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Va profiles" %>
+
+<h1>Va profiles</h1>
+
+<div id="va_profiles">
+  <% @va_profiles.each do |va_profile| %>
+    <%= render va_profile %>
+    <p>
+      <%= link_to "Show this va profile", va_profile %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New va profile", new_va_profile_path %>

@@ -1,0 +1,12 @@
+<% content_for :title, "Editing va profile" %>
+
+<h1>Editing va profile</h1>
+
+<%= render "form", va_profile: @va_profile %>
+
+<br>
+
+<div>
+  <%= link_to "Show this va profile", @va_profile %> |
+  <%= link_to "Back to va profiles", va_profiles_path %>
+</div>

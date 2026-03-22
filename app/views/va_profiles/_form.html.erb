@@ -1,0 +1,47 @@
+<%= form_with(model: va_profile) do |form| %>
+  <% if va_profile.errors.any? %>
+    <div style="color: red; margin-bottom: 1rem;">
+      <h2><%= va_profile.errors.count %> error(s) prevented this from being saved:</h2>
+      <ul>
+        <% va_profile.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div style="margin-bottom: 1.5rem;">
+    <%= form.label :niche, "Your VA Niche", style: "display:block; font-weight:bold; margin-bottom:0.5rem;" %>
+    <%= form.select :niche,
+      [
+        ["── Tier 1: Generalist ──", ""],
+        ["General VA — Administrative & Executive Support", "General VA"],
+        ["Travel & Itinerary VA — Trip Planning & Bookings", "Travel & Itinerary VA"],
+        ["── Tier 2: Specialist ──", ""],
+        ["Creative VA — Content, Design & Brand Support", "Creative VA"],
+        ["Social Media VA — Digital Presence & Community Mgmt", "Social Media VA"],
+        ["Lead Gen VA — Sales Pipeline & Biz Dev", "Lead Gen VA"],
+        ["Real Estate VA — Property Operations & Transactions", "Real Estate VA"],
+        ["Tech VA — AI, Automation & Systems Specialist", "Tech VA"]
+      ],
+      { prompt: "Select your niche..." },
+      { style: "width:100%; padding:0.5rem; font-size:1rem;" }
+    %>
+  </div>
+
+  <div style="margin-bottom: 1.5rem;">
+    <%= form.label :budget, "Monthly Tool Budget (USD)", style: "display:block; font-weight:bold; margin-bottom:0.5rem;" %>
+    <%= form.number_field :budget,
+      placeholder: "e.g. 50",
+      min: 0,
+      style: "width:100%; padding:0.5rem; font-size:1rem;" %>
+    <small style="color:#666;">Enter 0 if you want free tools only. $50+ unlocks premium recommendations.</small>
+  </div>
+
+  <div>
+    <%= form.submit "Generate My Stack →",
+      style: "background:#1B3A6B; color:white; padding:0.75rem 2rem;
+              font-size:1rem; border:none; border-radius:6px; cursor:pointer;" %>
+  </div>
+<% end %>
+
