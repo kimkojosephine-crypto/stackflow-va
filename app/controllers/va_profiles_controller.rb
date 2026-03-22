@@ -131,74 +131,23 @@ class VaProfilesController < ApplicationController
   #   and ensure the form dropdown in app/views/va_profiles/_form.html.erb
   #   includes the matching string value.)
 
-  def recommend_tools(niche, budget)
-    tools = case niche
-    when "General VA"
-      [
-        { name: "Google Workspace", desc: "Email, Docs, Drive & Calendar suite", free: false },
-        { name: "Trello", desc: "Visual task & project management", free: true },
-        { name: "Calendly", desc: "Automated meeting scheduling", free: true },
-        { name: "Notion", desc: "All-in-one notes, docs & wikis", free: true },
-        { name: "LastPass", desc: "Secure password management", free: true }
-      ]
-    when "Travel & Itinerary VA"
-      [
-        { name: "TripIt", desc: "Organise travel plans & itineraries", free: true },
-        { name: "Google Flights", desc: "Flight research & price tracking", free: true },
-        { name: "Booking.com Extranet", desc: "Hotel & accommodation management", free: true },
-        { name: "Notion", desc: "Build & share client itineraries", free: true },
-        { name: "Calendly", desc: "Coordinate travel schedules", free: true }
-      ]
-    when "Creative VA"
-      [
-        { name: "Canva Pro", desc: "Professional graphic design platform", free: false },
-        { name: "Adobe Express", desc: "Quick branded content creation", free: true },
-        { name: "Loom", desc: "Async video messaging & screen recording", free: true },
-        { name: "Grammarly", desc: "AI writing assistant & proofreader", free: true },
-        { name: "Notion", desc: "Content planning & client docs", free: true }
-      ]
-    when "Social Media VA"
-      [
-        { name: "Buffer", desc: "Social media scheduling & analytics", free: true },
-        { name: "Hootsuite", desc: "Multi-platform social media management", free: false },
-        { name: "Later", desc: "Visual Instagram & TikTok planner", free: true },
-        { name: "Canva Pro", desc: "Social graphics & branded templates", free: false },
-        { name: "Meta Business Suite", desc: "Facebook & Instagram management", free: true }
-      ]
-    when "Lead Gen VA"
-      [
-        { name: "Hunter.io", desc: "Find & verify professional email addresses", free: true },
-        { name: "Apollo.io", desc: "B2B prospecting & outreach platform", free: true },
-        { name: "HubSpot CRM", desc: "Free CRM for pipeline management", free: true },
-        { name: "Lemlist", desc: "Personalised cold email campaigns", free: false },
-        { name: "LinkedIn Sales Navigator", desc: "Advanced lead search & tracking", free: false }
-      ]
-    when "Real Estate VA"
-      [
-        { name: "HubSpot CRM", desc: "Lead tracking & client follow-ups", free: true },
-        { name: "DocuSign", desc: "Digital signatures for contracts", free: false },
-        { name: "Zillow", desc: "Property research & market analysis", free: true },
-        { name: "Calendly", desc: "Schedule property showings & client calls", free: true },
-        { name: "Trello", desc: "Transaction coordination & task tracking", free: true }
-      ]
-    when "Tech VA"
-      [
-        { name: "n8n", desc: "Open-source AI-native workflow automation", free: true },
-        { name: "Zapier", desc: "No-code automation between apps", free: true },
-        { name: "Make.com", desc: "Visual workflow automation builder", free: true },
-        { name: "Notion AI", desc: "AI-powered workspace & documentation", free: false },
-        { name: "Postman", desc: "API testing & workflow integration", free: true }
-      ]
-    else
-      [
-        { name: "Notion", desc: "All-in-one workspace to get started", free: true },
-        { name: "Slack", desc: "Team communication & collaboration", free: true },
-        { name: "Zoom", desc: "Video meetings & client calls", free: true },
-        { name: "Google Drive", desc: "Cloud storage & file sharing", free: true }
-      ]
+# Loads tool data from config/va_tools.yml and returns
+# the matching stack for the given niche, filtered by budget.
+# Falls back to the "default" key if niche is not found.
+def recommend_tools(niche, budget)
+  # Load and cache the YAML file — avoids re-reading disk on every request
+  all_tools = Rails.cache.fetch("va_tools") do
+    tools_file = Rails.root.join("config", "va_tools.yml")
+    YAML.load_file(tools_file).transform_values do |tools|
+      tools.map(&:symbolize_keys)
     end
-
-    budget.to_i >= 50 ? tools : tools.select { |t| t[:free] == true }
   end
-  helper_method :recommend_tools
+
+  # Fetch tools for the niche, fall back to default if not found
+  tools = all_tools[niche] || all_tools["default"]
+
+  # Return full stack if budget >= $50, otherwise free tools only
+  budget.to_i >= 50 ? tools : tools.select { |t| t[:free] == true }
+end
+helper_method :recommend_tools
 end
